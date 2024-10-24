@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderator Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the whole page */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #1e1f26;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        #mod-panel {
+            background-color: #282a36;
+            border-radius: 12px;
+            width: 500px;
+            padding: 20px 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            color: #f8f8f8;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3e4052;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #f1f1f1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .action-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #373a48;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .action-section:hover {
+            background-color: #434656;
+        }
+
+        input,
+        button,
+        select {
+            width: calc(100% - 30px);
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #5e6272;
+            font-size: 16px;
+            outline: none;
+            background-color: #2b2d3b;
+            color: #f8f8f8;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #7289da;
+        }
+
+        button {
+            background-color: #7289da;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .kick-btn {
+            background-color: #ff4757;
+        }
+
+        .kick-btn:hover {
+            background-color: #ff6b81;
+        }
+
+        /* User and message displays */
+        .user-item,
+        .message-item {
+            background-color: #40444b;
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            color: #f8f8f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-item:hover,
+        .message-item:hover {
+            background-color: #51545e;
+        }
+
+        /* Search Results */
+        #search-results,
+        #message-history {
+            background-color: #2b2d3b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #b9bbbe;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* Delete button for all messages */
+        #delete-all-messages-btn {
+            background-color: #ff4757;
+        }
+
+        #delete-all-messages-btn:hover {
+            background-color: #ff6b81;
+        }
+
+        /* Add visual spacing */
+        .flex-container {
+            display: flex;
+            gap: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mod-panel">
+        <h2>Moderator Panel</h2>
+
+        <!-- Create User Section -->
+        <div class="action-section">
+            <h3>Create User</h3>
+            <input type="text" id="create-user-input" placeholder="Enter username">
+            <button id="create-user-btn">Create User</button>
+            <div class="info-text">Easily add a new user to the chatroom.</div>
+        </div>
+
+        <!-- Online Users Section -->
+        <div class="action-section">
+            <h3>Online Users</h3>
+            <div id="online-users">Loading online users...</div>
+        </div>
+
+        <!-- Kick User Section -->
+        <div class="action-section">
+            <h3>Kick User</h3>
+            <input type="text" id="kick-user-input" placeholder="Enter username to kick">
+            <button class="kick-btn" id="kick-user-btn">Kick User</button>
+            <div class="info-text">Remove a user from the chatroom.</div>
+        </div>
+
+        <!-- Assign User Role Section -->
+        <div class="action-section">
+            <h3>Assign User Role</h3>
+            <div class="flex-container">
+                <input type="text" id="role-username" placeholder="Enter username">
+                <select id="role-select">
+                    <option value="user">User</option>
+                    <option value="moderator">Moderator</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <button id="assign-role-btn">Assign Role</button>
+            <div class="info-text">Set the appropriate role for a user.</div>
+        </div>
+
+        <!-- Force User Message Section -->
+        <div class="action-section">
+            <h3>Make User Send Message</h3>
+            <input type="text" id="force-message-username" placeholder="Enter username">
+            <input type="text" id="force-message-text" placeholder="Enter message">
+            <button id="force-message-btn">Force Message</button>
+            <div class="info-text">Force a user to send a specific message.</div>
+        </div>
+
+        <!-- Delete Message Section -->
+        <div class="action-section">
+            <h3>Delete Message</h3>
+            <input type="text" id="delete-message-username" placeholder="Enter username">
+            <input type="text" id="delete-message-text" placeholder="Enter message to delete">
+            <button id="delete-message-btn">Delete Message</button>
+            <div class="info-text">Remove a specific message from the chat.</div>
+        </div>
+
+        <!-- Search Messages Section -->
+        <div class="action-section">
+            <h3>Search Messages</h3>
+            <input type="text" id="search-message-input" placeholder="Search by keyword or username">
+            <button id="search-message-btn">Search</button>
+            <div id="search-results"></div>
+        </div>
+
+        <!-- Message History Section -->
+        <div class="action-section">
+            <h3>Message History</h3>
+            <div id="message-history">Loading message history...</div>
+        </div>
+
+        <!-- Delete All Messages Section -->
+        <div class="action-section">
+            <button id="delete-all-messages-btn">Delete All Messages</button>
+            <div class="info-text">Remove all messages from the chat.</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrRlP5XEIuyegP2_3CpD0RpJhk8GATej0",
+            authDomain: "chips-chatroom.firebaseapp.com",
+            projectId: "chips-chatroom",
+            storageBucket: "chips-chatroom.appspot.com",
+            messagingSenderId: "334241418918",
+            appId: "1:334241418918:web:ca6e37ed8f54bd49ceee67",
+            measurementId: "G-NKCQLZ9LFF"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const createUserBtn = document.getElementById('create-user-btn');
+        const kickUserInput = document.getElementById('kick-user-input');
+        const kickUserBtn = document.getElementById('kick-user-btn');
+        const forceMessageUsername = document.getElementById('force-message-username');
+        const forceMessageText = document.getElementById('force-message-text');
+        const forceMessageBtn = document.getElementById('force-message-btn');
+        const deleteMessageUsername = document.getElementById('delete-message-username');
+        const deleteMessageText = document.getElementById('delete-message-text');
+        const deleteMessageBtn = document.getElementById('delete-message-btn');
+        const deleteAllMessagesBtn = document.getElementById('delete-all-messages-btn');
+        const searchMessageInput = document.getElementById('search-message-input');
+        const searchMessageBtn = document.getElementById('search-message-btn');
+        const onlineUsers = document.getElementById('online-users');
+        const messageHistory = document.getElementById('message-history');
+        const searchResults = document.getElementById('search-results');
+        const roleUsername = document.getElementById('role-username');
+        const roleSelect = document.getElementById('role-select');
+        const assignRoleBtn = document.getElementById('assign-role-btn');
+
+        let kickedUsers = {}; // Store kicked users
+        let chatHistory = []; // Store messages for later reference
+
+        // Create User
+        createUserBtn.addEventListener('click', () => {
+            const username = createUserInput.value.trim();
+            if (username) {
+                const userRef = database.ref('onlineUsers').push();
+                userRef.set({ username: username });
+                alert(`${username} has been created.`);
+                createUserInput.value = '';
+            } else {
+                alert("Please enter a valid username.");
+            }
+        });
+
+        // Load Online Users
+        function loadOnlineUsers() {
+            database.ref('onlineUsers').on('value', (snapshot) => {
+                const users = snapshot.val();
+                onlineUsers.innerHTML = ''; // Clear previous users
+                for (let key in users) {
+                    const user = users[key];
+                    if (!kickedUsers[user.username]) { // Don't display kicked users
+                        const userElement = document.createElement('div');
+                        userElement.classList.add('user-item');
+                        userElement.innerHTML = `<span class="user-name">${user.username}</span>`;
+                        onlineUsers.appendChild(userElement);
+                    }
+                }
+            });
+        }
+
+        // Load Message History
+        function loadMessageHistory() {
+            database.ref('chat').on('value', (snapshot) => {
+                const messages = snapshot.val();
+                messageHistory.innerHTML = ''; // Clear previous messages
+                chatHistory = []; // Reset chat history
+                for (let key in messages) {
+                    const message = messages[key];
+                    chatHistory.push(message); // Store messages for searching
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-item');
+                    messageElement.innerHTML = `<strong>${message.username}:</strong> ${message.message}`;
+                    messageHistory.appendChild(messageElement);
+                }
+            });
+        }
+
+        // Kick User
+        kickUserBtn.addEventListener('click', () => {
+            const username = kickUserInput.value.trim();
+            if (username) {
+                database.ref('onlineUsers').once('value', (snapshot) => {
+                    const users = snapshot.val();
+                    let userFound = false; // Flag to track if user is found
+                    for (let key in users) {
+                        if (users[key].username === username) {
+                            database.ref('onlineUsers/' + key).remove(); // Remove user
+                            kickedUsers[username] = true; // Mark user as kicked
+                            alert(`${username} has been kicked.`);
+                            userFound = true; // Update flag
+                            break;
+                        }
+                    }
+                    if (!userFound) {
+                        alert(`User ${username} not found.`);
+                    }
+                });
+            } else {
+                alert("Please enter a valid username.");
+            }
+        });
+
+        // Assign User Role
+        assignRoleBtn.addEventListener('click', () => {
+            const username = roleUsername.value.trim();
+            const role = roleSelect.value;
+            if (username) {
+                database.ref('onlineUsers').once('value', (snapshot) => {
+                    const users = snapshot.val();
+                    let userFound = false; // Flag to track if user is found
+                    for (let key in users) {
+                        if (users[key].username === username) {
+                            database.ref('onlineUsers/' + key).update({ role: role }); // Update user role
+                            alert(`Role ${role} has been assigned to ${username}.`);
+                            userFound = true; // Update flag
+                            break;
+                        }
+                    }
+                    if (!userFound) {
+                        alert(`User ${username} not found.`);
+                    }
+                });
+            } else {
+                alert("Please enter a valid username.");
+            }
+        });
+
+        // Make User Send Message
+        forceMessageBtn.addEventListener('click', () => {
+            const username = forceMessageUsername.value.trim();
+            const message = forceMessageText.value.trim();
+
+            if (username && message) {
+                database.ref('onlineUsers').once('value', (snapshot) => {
+                    const users = snapshot.val();
+                    let userFound = false; // Flag to track if user is found
+                    for (let key in users) {
+                        if (users[key].username === username) {
+                            const chatItemRef = database.ref('chat').push();
+                            chatItemRef.set({
+                                username: username,
+                                message: message,
+                                timestamp: new Date().toISOString()
+                            });
+                            alert(`${username} sent the message: "${message}"`);
+                            userFound = true; // Update flag
+                            break;
+                        }
+                    }
+                    if (!userFound) {
+                        alert(`User ${username} not found.`);
+                    }
+                });
+            } else {
+                alert("Please enter both a username and a message.");
+            }
+        });
+
+        // Delete Specific Message
+        deleteMessageBtn.addEventListener('click', () => {
+            const username = deleteMessageUsername.value.trim();
+            const messageToDelete = deleteMessageText.value.trim();
+
+            if (username && messageToDelete) {
+                const messageRef = database.ref('chat');
+                messageRef.once('value', (snapshot) => {
+                    const messages = snapshot.val();
+                    let messageFound = false; // Flag to track if message is found
+                    for (let key in messages) {
+                        const message = messages[key];
+                        if (message.username === username && message.message === messageToDelete) {
+                            messageRef.child(key).remove(); // Remove message
+                            alert(`Message from ${username} has been deleted.`);
+                            messageFound = true; // Update flag
+                            break;
+                        }
+                    }
+                    if (!messageFound) {
+                        alert(`Message not found for ${username}.`);
+                    }
+                });
+            } else {
+                alert("Please enter both a username and the message text.");
+            }
+        });
+
+        // Search Messages
+        searchMessageBtn.addEventListener('click', () => {
+            const keyword = searchMessageInput.value.trim().toLowerCase();
+            searchResults.innerHTML = ''; // Clear previous results
+
+            if (keyword) {
+                const filteredMessages = chatHistory.filter(msg =>
+                    msg.username.toLowerCase().includes(keyword) || msg.message.toLowerCase().includes(keyword)
+                );
+
+                if (filteredMessages.length > 0) {
+                    filteredMessages.forEach(msg => {
+                        const resultElement = document.createElement('div');
+                        resultElement.classList.add('message-item');
+                        resultElement.innerHTML = `<strong>${msg.username}:</strong> ${msg.message}`;
+                        searchResults.appendChild(resultElement);
+                    });
+                } else {
+                    searchResults.innerHTML = `<div class="info-text">No messages found.</div>`;
+                }
+            } else {
+                alert("Please enter a keyword to search.");
+            }
+        });
+
+        // Delete All Messages
+        deleteAllMessagesBtn.addEventListener('click', () => {
+            if (confirm("Are you sure you want to delete all messages? This action cannot be undone.")) {
+                database.ref('chat').remove();
+                alert("All messages have been deleted.");
+                messageHistory.innerHTML = ''; // Clear message history display
+            }
+        });
+
+        // Load online users and message history on page load
+        loadOnlineUsers();
+        loadMessageHistory();
+    </script>
+</body>
+
+</html>
