@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chip's Room</title>
+    <link rel="icon" href="https://github.com/ChipsRoom/chipsroom.github.io/raw/main/Chip%E2%80%99s.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #4a4e69, #22223b);
+            color: #f0f0f0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 300px;
+            background-color: #2b2d42;
+            padding: 20px;
+            border-right: 1px solid #202225;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+
+        #sidebar h3 {
+            color: #ffffff;
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .user {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #40444b;
+            transition: background-color 0.3s, transform 0.2s;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .user:hover {
+            background-color: #6a86f7;
+            transform: scale(1.05);
+        }
+
+        #chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #2c2f33;
+            overflow: hidden;
+            transition: background-color 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin: 20px;
+        }
+
+        #login-section {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        #login-section input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            background-color: #40444b;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        #login-section input:focus {
+            outline: none;
+            background-color: #50555b;
+        }
+
+        #login-section button {
+            width: 100%;
+            padding: 15px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #login-section button:hover {
+            background-color: #5b6eae;
+            transform: scale(1.05);
+        }
+
+        #chat-section {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        #chat-display {
+            flex: 1;
+            overflow-y: auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chat-item {
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #40444b;
+            max-width: 70%;
+            word-wrap: break-word;
+            transition: background-color 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-item strong {
+            color: #7289da;
+        }
+
+        #message-container {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #23272a;
+            border-top: 1px solid #202225;
+            border-radius: 0 0 15px 15px;
+        }
+
+        #message-input {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            width: calc(100% - 130px);
+            background-color: #40444b;
+            color: white;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+            resize: none;
+        }
+
+        #message-input:focus {
+            outline: none;
+            background-color: #50555b;
+        }
+
+        #send-message-btn {
+            padding: 15px;
+            background-color: #7289da;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #send-message-btn:hover {
+            background-color: #5b6eae;
+            transform: scale(1.05);
+        }
+
+        /* Donate Button */
+        #donate-btn {
+            padding: 12px 15px;
+            background-color: #ff4757;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 16px;
+        }
+
+        #donate-btn:hover {
+            background-color: #ff6b81;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        <h3>Online Users:</h3>
+        <div id="online-list">Fetching...</div>
+    </div>
+    <div id="chat-container">
+        <!-- Login Section -->
+        <div id="login-section">
+            <h2 style="color: white;">Chip's Room</h2>
+            <h2 style="color: white;">"The Best Chatroom For School"</h2>
+            <input type="text" id="username-input" placeholder="Enter your username" required />
+            <button id="set-username-btn">Join Chat</button>
+        </div>
+
+        <!-- Chat Section -->
+        <div id="chat-section">
+            <div id="chat-display"></div>
+            <div id="message-container">
+                <input type="text" id="message-input" placeholder="Type your message..." required />
+                <button id="send-message-btn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrP5XEIuyegP2_3CpD0RpJhk8GATej0",
+            authDomain: "chips-chatroom.firebaseapp.com",
+            projectId: "chips-chatroom",
+            storageBucket: "chips-chatroom.appspot.com",
+            messagingSenderId: "334241418918",
+            appId: "1:334241418918:web:ca6e37ed8f54bd49ceee67",
+            measurementId: "G-NKCQLZ9LFF",
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // DOM Elements
+        const usernameInput = document.getElementById("username-input");
+        const setUsernameBtn = document.getElementById("set-username-btn");
+        const chatSection = document.getElementById("chat-section");
+        const chatDisplay = document.getElementById("chat-display");
+        const messageInput = document.getElementById("message-input");
+        const sendMessageBtn = document.getElementById("send-message-btn");
+        const onlineList = document.getElementById("online-list");
+        const sidebar = document.getElementById("sidebar"); // Get sidebar
+
+        let username = "";
+        let userRefKey = "";
+        const USERNAME_LIMIT = 20; // Limit for username length
+        const MESSAGE_LIMIT = 200; // Limit for message length
+        const STAFF_CODE = "1121"; // Staff code
+
+        // Join chat
+        setUsernameBtn.addEventListener("click", () => {
+            username = usernameInput.value.trim();
+
+            // Validate username
+            if (username.includes("[STAFF]")) {
+                const staffCode = prompt("Enter the staff code to join as staff:", "");
+                if (staffCode !== STAFF_CODE) {
+                    alert("Invalid staff code. Please enter a valid staff code.");
+                    return;
+                }
+            }
+
+            if (username && username.length <= USERNAME_LIMIT) {
+                // Show sidebar and chat section, and start loading chat
+                sidebar.style.display = "flex"; // Show sidebar
+                document.getElementById("login-section").style.display = "none";
+                chatSection.style.display = "flex";
+                loadChat();
+
+                // Add user to online list
+                userRefKey = database.ref("onlineUsers").push({
+                    username: username,
+                }).key;
+
+                // Listen for online users changes
+                loadOnlineUsers();
+            }
+        });
+
+        // Send message function
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message && message.length <= MESSAGE_LIMIT) {
+                database.ref("chat").push({
+                    username: username,
+                    message: message,
+                });
+                messageInput.value = "";
+            }
+        }
+
+        // Send message when button is clicked
+        sendMessageBtn.addEventListener("click", sendMessage);
+
+        // Send message when Enter key is pressed
+        messageInput.addEventListener("keypress", (event) => {
+            if (event.key === "Enter") {
+                sendMessage();
+                event.preventDefault(); // Prevent default behavior (like form submission)
+            }
+        });
+
+        // Load chat messages
+        function loadChat() {
+            database.ref("chat").on("value", (snapshot) => {
+                const chats = snapshot.val();
+                chatDisplay.innerHTML = ""; // Clear previous messages
+                for (let key in chats) {
+                    const chatItem = chats[key];
+                    const chatElement = document.createElement("div");
+                    chatElement.classList.add("chat-item");
+                    chatElement.innerHTML = `<strong>${chatItem.username}</strong>: ${chatItem.message}`;
+                    chatDisplay.appendChild(chatElement);
+                }
+                // Scroll to the bottom after loading messages
+                chatDisplay.scrollTop = chatDisplay.scrollHeight;
+            });
+        }
+
+        // Load online users
+        function loadOnlineUsers() {
+            database.ref("onlineUsers").on("value", (snapshot) => {
+                const users = snapshot.val();
+                onlineList.innerHTML = ""; // Clear previous online users
+                for (let key in users) {
+                    const userItem = users[key];
+                    const userElement = document.createElement("div");
+                    userElement.classList.add("user");
+                    userElement.textContent = userItem.username;
+                    onlineList.appendChild(userElement);
+                }
+            });
+        }
+
+        // Remove user from online list when leaving
+        window.addEventListener("beforeunload", () => {
+            if (userRefKey) {
+                database.ref(`onlineUsers/${userRefKey}`).remove();
+            }
+        });
+    </script>
+</body>
